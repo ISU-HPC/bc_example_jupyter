@@ -1,0 +1,117 @@
+# Batch Connect app configuration file
+#
+# @note Used to define the submitted cluster, title, description, and
+#   hard-coded/user-defined attributes that make up this Batch Connect app.
+---
+
+# **MUST** set cluster id here that matches cluster configuration file located
+# under /etc/ood/config/clusters.d/*.yml
+# @example Use the Owens cluster at Ohio Supercomputer Center
+#     cluster: "owens"
+cluster: "ceres"
+
+# Define attribute values that aren't meant to be modified by the user within
+# the Dashboard form
+attributes:
+  bc_queue:
+    value: debug
+  # Set the corresponding modules that need to be loaded for Jupyter to run
+  #
+  # @note It is called within the batch job as `module load <modules>` if
+  #   defined
+  # @example Do not load any modules
+  #     modules: ""
+  # @example Using default python module
+  #     modules: "python"
+  # @example Using specific python module
+  #     modules: "python/3.5"
+  # @example Using combination of modules
+  #     modules: "python/3.5 cuda/8.0.44"
+  modules: "jupyterhub/1.4.1"
+
+  slurm_account:
+    widget: select
+    label: "Account"
+    options:
+    <% `sacctmgr show -PQrn associations User=${USER} | cut -d '|' -f 2`.split("\n").each do |val| %>
+      - ["<%= val %>", "<%= val %>"]
+    <% end %>
+    required: true
+
+  slurm_partition:
+    value: ondemand
+    widget: select
+    label: "Slurm Partition"
+    options:
+      - [ "ondemand" , "ondemand" ]
+    help: Jobs must run in the ondemand partition, which has a 24-hour time limit
+
+  bc_num_slots: "1"
+
+  num_cores:
+    widget: "number_field"
+    label: "Number of cores"
+    value: 2
+    help: |
+      Number of cores.
+    min: 0
+    max: 36
+    step: 1
+    id: 'num_cores'
+    required: true
+
+  mem_req:
+    label: "Memory required"
+    help: "If no unit specified, Megabytes.  Can use 'k', 'M', 'G' suffixes.  NO DECIMALS.  Example: 3072M"
+    widget: text_field
+    value: "6000M"
+
+  job_name:
+    label: "Job name"
+    help: "Name of job shown in queue"
+    value: "Jupyter"
+    widget: text_field
+
+  jupyter_generation:
+    label: "Jupyter Notebook vs Lab"
+    help: "Lab is recommended"
+    value: "lab"
+    widget: select
+    options:
+      - [ "Lab" , "lab" ]
+      - [ "Notebook" , "notebook" ]
+
+  working_dir:
+    label: "Working Directory"
+    value: "$HOME"
+    data-filepicker: true
+    data-target-file-type: dirs  # Valid values are: files, dirs, or both
+    readonly: false
+    help: "Select your project directory; defaults to $HOME"
+
+
+  # Any extra command line arguments to feed to the `jupyter notebook ...`
+  # command that launches the Jupyter notebook within the batch job
+  extra_jupyter_args: ""
+
+# All of the attributes that make up the Dashboard form (in respective order),
+# and made available to the submit configuration file and the template ERB
+# files
+#
+# @note You typically do not need to modify this unless you want to add a new
+#   configurable value
+# @note If an attribute listed below is hard-coded above in the `attributes`
+#   option, then it will not appear in the form page that the user sees in the
+#   Dashboard
+form:
+  - modules
+  - extra_jupyter_args
+  - slurm_account
+  - slurm_partition
+  - bc_num_hours
+  - bc_num_slots
+  - num_cores
+  - mem_req
+  - job_name
+  - jupyter_generation
+  - working_dir
