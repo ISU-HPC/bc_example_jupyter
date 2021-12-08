@@ -24,6 +24,9 @@ module list
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
 
+#fix a problem on hpc-class
+unset XDG_RUNTIME_DIR
+
 # Launch the Jupyter Notebook Server
 set -x
 jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
