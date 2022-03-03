@@ -12,8 +12,6 @@ batch_connect:
   # @note Do not change this unless you know what you are doing!
   template: "basic"
 
-  conn_params:
-    - csrf_token
 
   # You can override the command used to query the hostname of the compute node
   # here
@@ -29,12 +27,13 @@ batch_connect:
 #
 script:
   queue_name: "<%= custom_queue %>"
-  accounting_id: "<%= slurm_account %>"
+  accounting_id: "<%= custom_account %>"
   native:
     - "-n"
-    - "<%= num_cores.blank? ? 1 : num_cores.to_i %>"
+    - "<%= ntasks.blank? ? 1 : ntasks.to_i %>"
+    - "--job-name=<%= job_name %>"
     <%- if custom_queue == "gpu" -%>
     - "--gres=gpu:1"
     <%- end -%>
-    - "--job-name=<%= job_name %>"
     - "-N 1"
+       
