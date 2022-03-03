@@ -3,8 +3,8 @@
 # Benchmark info
 echo "TIMING - Starting main script at: $(date)"
 
-# Set working directory to home directory
-cd "${HOME}"
+# Set working directory
+cd <%= context.working_dir %>
 
 #
 # Start Jupyter Notebook Server
@@ -29,4 +29,4 @@ unset XDG_RUNTIME_DIR
 
 # Launch the Jupyter Notebook Server
 set -x
-jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+jupyter <%= context.jupyter_generation %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
