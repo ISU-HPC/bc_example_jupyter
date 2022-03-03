@@ -12,6 +12,9 @@ batch_connect:
   # @note Do not change this unless you know what you are doing!
   template: "basic"
 
+  conn_params:
+    - csrf_token
+
   # You can override the command used to query the hostname of the compute node
   # here
   #
@@ -24,8 +27,14 @@ batch_connect:
 # Configure the job script submission parameters for the batch job here
 # @see http://www.rubydoc.info/gems/ood_core/OodCore/Job/Script
 #
-#script:
-#  queue_name: "queue1"
-#  accounting_id: "account1"
-#  email_on_started: true
-#  native: # ... array of command line arguments ...
+script:
+  queue_name: "<%= custom_queue %>"
+  accounting_id: "<%= slurm_account %>"
+  native:
+    - "-n"
+    - "<%= num_cores.blank? ? 1 : num_cores.to_i %>"
+    <%- if custom_queue == "gpu" -%>
+    - "--gres=gpu:1"
+    <%- end -%>
+    - "--job-name=<%= job_name %>"
+    - "-N 1"

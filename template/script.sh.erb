@@ -1,29 +1,110 @@
 #!/usr/bin/env bash
 
-# Benchmark info
-echo "TIMING - Starting main script at: $(date)"
+# borrows from
+# https://www.rocker-project.org/use/singularity/
+# https://www.rc.virginia.edu/userinfo/howtos/rivanna/launch-rserver/
 
-# Set working directory to home directory
-cd "${HOME}"
+# Load the required environment
+#module load rstudio-server/<%= context.version %>
+module load singularity
+export SINGULARITY_BIND="/shared,/opt,/local,/ptmp,/work,/scratch"
 
 #
-# Start Jupyter Notebook Server
+# Start RStudio Server
 #
 
-<%- unless context.modules.blank? -%>
-# Purge the module environment to avoid conflicts
-module purge
+# PAM auth helper used by RStudio
+export RSTUDIO_AUTH="${PWD}/bin/auth"
 
-# Load the require modules
-module load <%= context.modules %>
+# Generate an `rsession` wrapper script
+export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
+(
+umask 077
+sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
+  #!/usr/bin/env bash
 
-# List loaded modules
-module list
-<%- end -%>
+  # Set OMP_NUM_THREADS to prevent OpenBLAS (and any other OpenMP-enhanced
+  # libraries used by R) from spawning more threads than the number of processors
+  # allocated to the job.
+  export OMP_NUM_THREADS=${SLURM_JOB_CPUS_PER_NODE}
 
-# Benchmark info
-echo "TIMING - Starting jupyter at: $(date)"
+  # Set R_LIBS_USER to a path specific to rocker/rstudio to avoid conflicts with
+  # personal libraries from any R installation in the host environment
+  export R_LIBS_USER=${WORK_DIR}/.ondemand/${USER}/rstudio/libs/<%= context.version %>
+  mkdir -p ${R_LIBS_USER}
 
-# Launch the Jupyter Notebook Server
+  # Change RStudio state/config dirs
+  # https://docs.rstudio.com/ide/server-pro/r_sessions/customizing_session_settings.html
+  export XDG_DATA_HOME=${WORK_DIR}/.ondemand/${USER}/share
+  mkdir -p ${XDG_DATA_HOME}
+  export XDG_CONFIG_HOME=${WORK_DIR}/.ondemand/${USER}/config
+  mkdir -p ${XDG_CONFIG_HOME}
+  export XDG_STATE_HOME=${WORK_DIR}/.ondemand/${USER}/state
+  mkdir -p ${XDG_STATE_HOME}
+
+  # copy in work directory
+  export WORK_DIR=${WORK_DIR}
+
+  # Do not suspend idle sessions.
+  # Alternative to setting session-timeout-minutes=0 in /etc/rstudio/rsession.conf
+  # https://github.com/rstudio/rstudio/blob/v1.4.1106/src/cpp/server/ServerSessionManager.cpp#L126
+  export RSTUDIO_SESSION_TIMEOUT=0
+
+  # Log all output from this script
+  export RSESSION_LOG_FILE="${PWD}/rsession.log"
+
+  exec &>>"\${RSESSION_LOG_FILE}"
+
+  # Launch the original command
+  echo "Launching rsession..."
+  set -x
+  exec rsession --r-libs-user "${R_LIBS_USER}" \
+                "\${@}" \
+
+EOL
+)
+chmod 700 "${RSESSION_WRAPPER_FILE}"
+
+# Set working directory
+cd "${WORK_DIR}"
+
+# Make temporary directory
+export TMPDIR="$(mktemp -d)"
+
+mkdir -p "$TMPDIR/tmp/rstudio-server"
+python -c 'from uuid import uuid4; print(uuid4())' > "$TMPDIR/tmp/rstudio-server/secure-cookie-key"
+chmod 0600 "$TMPDIR/tmp/rstudio-server/secure-cookie-key"
+mkdir -p ${TMPDIR}/var/{lib,run}
+
+# make Rprofile
+export RPROFILE_SITE="${TMPDIR}/Rprofile.site"
+(
+umask 077
+sed 's/^ \{2\}//' > "${RPROFILE_SITE}" << EOL
+  options(repos=structure(c(CRAN="https://mirror.las.iastate.edu/CRAN/")))
+  setwd(Sys.getenv("WORK_DIR"))
+EOL
+)
+chmod 700 "${RPROFILE_SITE}"
+
 set -x
-jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+# Launch the RStudio Server
+echo "Starting up rserver..."
+
+#echo Hot wired
+RSTUDIO_SERVER_IMAGE=/shared/hpc/containers/Rstudio/<%= context.version %>/rocker-geospatial.sif
+
+singularity exec \
+    -B $TMPDIR/var/lib:/var/lib/rstudio-server \
+    -B $TMPDIR/var/run:/var/run/rstudio-server \
+    -B $TMPDIR/tmp:/tmp \
+    -B ${RPROFILE_SITE}:/usr/local/lib/R/etc/Rprofile.site \
+    "$RSTUDIO_SERVER_IMAGE" \
+    rserver \
+    --www-port "${port}" \
+    --auth-none 0 \
+    --auth-pam-helper-path "${RSTUDIO_AUTH}" \
+    --auth-encrypt-password 0 \
+    --rsession-path "${RSESSION_WRAPPER_FILE}"
+
+echo 'Singularity as exited...'
