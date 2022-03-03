@@ -15,7 +15,7 @@
   rescue => e
     queues = []
     error = e.message.strip
-  end 
+  end
 -%>
 
 
@@ -23,7 +23,7 @@
   cmd1 = "/bin/whoami"
   begin
     username, status = Open3.capture2e(cmd1)
-    cmd2 = "/usr/bin/sacctmgr show assoc format=account -n where user=#{username}"
+    cmd2 = "/usr/bin/sacctmgr -P show assoc format=account -n where user=#{username}"
     output, status = Open3.capture2e(cmd2)
     if status.success?
       accounts = output.split("\n").map(&:strip).reject(&:blank?).sort
@@ -63,7 +63,7 @@ attributes:
   #     modules: "python/3.5"
   # @example Using combination of modules
   #     modules: "python/3.5 cuda/8.0.44"
-  modules: "py-jupyter-notebook"
+  modules: "jupyterhub/2.0.0"
 
   # Any extra command line arguments to feed to the `jupyter notebook ...`
   # command that launches the Jupyter notebook within the batch job
@@ -87,8 +87,8 @@ attributes:
     <%- queues.each do |q| -%>
       - [ "<%= q %>", "<%= q %>" ]
     <%- end -%>
-  <%- end -%> 
- 
+  <%- end -%>
+
   custom_account:
     label: Account
     help: Account under which to run the job
@@ -128,8 +128,22 @@ attributes:
     min: 1
     max: 16
 
+  jupyter_generation:
+    label: "Jupyter Notebook vs Lab"
+    help: "Lab is recommended"
+    value: "lab"
+    widget: select
+    options:
+      - [ "Lab" , "lab" ]
+      - [ "Notebook" , "notebook" ]
 
-
+  working_dir:
+    label: "Working Directory"
+    value: "$HOME"
+    data-filepicker: true
+    data-target-file-type: dirs  # Valid values are: files, dirs, or both
+    readonly: false
+    help: "Select your project directory; defaults to $HOME"
 
 # All of the attributes that make up the Dashboard form (in respective order),
 # and made available to the submit configuration file and the template ERB
@@ -146,7 +160,9 @@ form:
   - custom_account
   - custom_queue
   - bc_num_hours
-  - bc_num_slots
+#  - bc_num_slots
   - ntasks
   - job_name
   - bc_email_on_started
+  - jupyter_generation
+  - working_dir
