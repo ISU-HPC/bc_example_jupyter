@@ -35,4 +35,4 @@ script:
     <%- if custom_queue == "gpu" -%>
     - "--gres=gpu:1"
     <%- end -%>
-       
+    - "-N 1"       
