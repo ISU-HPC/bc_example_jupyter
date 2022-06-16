@@ -46,7 +46,7 @@
 # under /etc/ood/config/clusters.d/*.yml
 # @example Use the Owens cluster at Ohio Supercomputer Center
 #     cluster: "owens"
-cluster: ""
+cluster: "nova"
 
 # Define attribute values that aren't meant to be modified by the user within
 # the Dashboard form
@@ -114,6 +114,12 @@ attributes:
     widget: text_field
     value: "2048M"
 
+  gres:
+    label: "Generic Resources (GRES)"
+    help: "Specify options passed to --gres flag during job-submission. Example: **gpu:v100:1**"
+    widget: text_field
+    value: ""
+
   job_name:
     label: "Job name"
     help: "Name of job shown in queue"
@@ -162,6 +168,7 @@ form:
   - bc_num_hours
 #  - bc_num_slots
   - ntasks
+  - gres
   - job_name
   - bc_email_on_started
   - jupyter_generation

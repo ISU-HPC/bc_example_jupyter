@@ -32,8 +32,8 @@ script:
     - "-n"
     - "<%= ntasks.blank? ? 1 : ntasks.to_i %>"
     - "--job-name=<%= job_name %>"
-    <%- if custom_queue == "gpu" -%>
-    - "--gres=gpu:1"
+    <%- if custom_queue.include? "gpu" or custom_queue.include? "a100" -%>
+    - "--gres=<%= gres %>"
     <%- end -%>
     - "-N 1"
        
