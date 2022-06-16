@@ -23,7 +23,7 @@
   cmd1 = "/bin/whoami"
   begin
     username, status = Open3.capture2e(cmd1)
-    cmd2 = "/usr/bin/sacctmgr -P show assoc format=account -n where user=#{username}"
+    cmd2 = "/usr/bin/sacctmgr show assoc format=account -n where user=#{username}"
     output, status = Open3.capture2e(cmd2)
     if status.success?
       accounts = output.split("\n").map(&:strip).reject(&:blank?).sort
@@ -114,12 +114,6 @@ attributes:
     widget: text_field
     value: "2048M"
 
-  gres:
-    label: "Generic Resources (GRES)"
-    help: "Specify options passed to --gres flag during job-submission. Example: **gpu:v100:1**"
-    widget: text_field
-    value: ""
-
   job_name:
     label: "Job name"
     help: "Name of job shown in queue"
@@ -133,6 +127,12 @@ attributes:
     value: 2
     min: 1
     max: 16
+
+  gres:
+    label: "GRES (only applies to GPU jobs)"
+    help: "Request GPU resources.  Example: **gpu:a100:1**"
+    widget: text_field
+    value: ""
 
   jupyter_generation:
     label: "Jupyter Notebook vs Lab"
@@ -150,6 +150,7 @@ attributes:
     data-target-file-type: dirs  # Valid values are: files, dirs, or both
     readonly: false
     help: "Select your project directory; defaults to $HOME"
+
 
 # All of the attributes that make up the Dashboard form (in respective order),
 # and made available to the submit configuration file and the template ERB
