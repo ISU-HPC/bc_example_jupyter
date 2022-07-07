@@ -112,7 +112,7 @@ attributes:
     label: "Memory required"
     help: "If no unit specified, Megabytes.  Can use 'k', 'M', 'G' suffixes.  NO DECIMALS.  Example: 3072M"
     widget: text_field
-    value: "2048M"
+    value: "4096M"
 
   job_name:
     label: "Job name"
@@ -168,6 +168,7 @@ form:
   - custom_queue
   - bc_num_hours
 #  - bc_num_slots
+  - mem_req
   - ntasks
   - gres
   - job_name
