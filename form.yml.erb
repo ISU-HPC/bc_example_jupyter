@@ -23,7 +23,7 @@
   cmd1 = "/bin/whoami"
   begin
     username, status = Open3.capture2e(cmd1)
-    cmd2 = "/usr/bin/sacctmgr show assoc format=account -n where user=#{username}"
+    cmd2 = "/usr/bin/sacctmgr show assoc format=account%32 -n where user=#{username}"
     output, status = Open3.capture2e(cmd2)
     if status.success?
       accounts = output.split("\n").map(&:strip).reject(&:blank?).sort
