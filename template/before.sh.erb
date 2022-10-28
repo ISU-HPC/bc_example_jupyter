@@ -41,7 +41,12 @@ PASSWORD_SHA1="$(echo -n "${password}${SALT}" | openssl dgst -sha1 | awk '{print
 # `script.sh.erb` file when launching the Jupyter Notebook server.
 export CONFIG_FILE="${PWD}/config.py"
 
+generation="<%= context.jupyter_generation %>"
+
 # Generate Jupyter configuration file with secure file permissions
+if [[ $generation == "notebook" ]]
+then 
+
 (
 umask 077
 cat > "${CONFIG_FILE}" << EOL
@@ -56,3 +61,23 @@ c.NotebookApp.notebook_dir = '<%= context.working_dir %>'
 c.NotebookApp.disable_check_xsrf = True
 EOL
 )
+
+else
+
+(
+umask 077
+cat > "${CONFIG_FILE}" << EOL
+c.ServerApp.ip = '*'
+c.ServerApp.port = ${port}
+c.ServerApp.port_retries = 0
+c.ServerApp.password = u'sha1:${SALT}:${PASSWORD_SHA1}'
+c.ServerApp.base_url = '/node/${host}/${port}/'
+c.ServerApp.open_browser = False
+c.ServerApp.allow_origin = '*'
+c.ServerApp.root_dir = '<%= context.working_dir %>'
+c.ServerApp.disable_check_xsrf = True
+EOL
+)
+
+
+fi

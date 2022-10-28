@@ -26,8 +26,8 @@ batch_connect:
 # @see http://www.rubydoc.info/gems/ood_core/OodCore/Job/Script
 #
 script:
-  queue_name: "<%= custom_queue %>"
-  accounting_id: "<%= custom_account %>"
+  queue_name: "<%= custom_queue.delete(' ') %>"
+  accounting_id: "<%= custom_account.delete(' ') %>"
   native:
     - "-n"
     - "<%= ntasks.blank? ? 1 : ntasks.to_i %>"
@@ -37,3 +37,4 @@ script:
     - "--gres=<%= gres %>"
     <%- end -%>
     - "-N 1"   
+

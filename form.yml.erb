@@ -4,43 +4,15 @@
 #   hard-coded/user-defined attributes that make up this Batch Connect app.
 
 <%-
-  cmd = "/usr/bin/sinfo -ho %R"
-  begin
-    output, status = Open3.capture2e(cmd)
-    if status.success?
-      queues = output.split("\n").map(&:strip).reject(&:blank?).sort
-    else
-      raise output
-    end
-  rescue => e
-    queues = []
-    error = e.message.strip
-  end 
+        begin
+        queues = File.readlines Dir.home + "/.slurm-partitions"
+        accounts = File.readlines Dir.home + "/.slurm-accounts"
+        error = ""
+        end
 -%>
-
-
-<%-
-  cmd1 = "/bin/whoami"
-  begin
-    username, status = Open3.capture2e(cmd1)
-    cmd2 = "/usr/bin/sacctmgr show assoc format=account%32 -n where user=#{username}"
-    output, status = Open3.capture2e(cmd2)
-    if status.success?
-      accounts = output.split("\n").map(&:strip).reject(&:blank?).sort
-    else
-      raise output
-    end
-  rescue => e
-    accounts = []
-    error = e.message.strip
-  end
--%>
-
-
 
 
 ---
-
 
 # **MUST** set cluster id here that matches cluster configuration file located
 # under /etc/ood/config/clusters.d/*.yml
@@ -73,12 +45,6 @@ attributes:
   custom_queue:
     label: Queue
     help: Select queue from the drop-down
-    <%- if error -%>
-      <span class="text-danger">Error when parsing queues:</span>
-      ```
-      <%= error.gsub("\n", "\n      ") %>
-      ```
-    <%- end -%>
   <%- if queues.blank? -%>
     widget: text_field
   <%- else -%>
@@ -92,21 +58,29 @@ attributes:
   custom_account:
     label: Account
     help: Account under which to run the job
-    <%- if error -%>
-      <span class="text-danger">Error when parsing accounts:</span>
-      ```
-      <%= error.gsub("\n", "\n      ") %>
-      ```
-    <%- end -%>
   <%- if accounts.blank? -%>
     widget: text_field
   <%- else -%>
     widget: select
     options:
     <%- accounts.each do |a| -%>
-      - [ "<%= a %>", "<%= a %>" ]
+      - [ "<%= a %>", "<%= a.delete(' ') %>" ]
     <%- end -%>
   <%- end -%>
+
+  bc_num_slots: "1"
+
+  num_cores:
+    widget: "number_field"
+    label: "Number of cores"
+    value: 2
+    help: |
+      Number of cores.
+    min: 0
+    max: 36
+    step: 1
+    id: 'num_cores'
+    required: true
 
   mem_req:
     label: "Memory required"
@@ -150,7 +124,6 @@ attributes:
     data-target-file-type: dirs  # Valid values are: files, dirs, or both
     readonly: false
     help: "Select your project directory; defaults to $HOME"
-
 
 # All of the attributes that make up the Dashboard form (in respective order),
 # and made available to the submit configuration file and the template ERB
