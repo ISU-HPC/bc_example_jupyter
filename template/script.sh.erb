@@ -18,6 +18,18 @@ module purge
 module load <%= context.modules %>
 module load git
 
+
+# Load additional modules on the GPU node
+
+if [[ $(hostname) == *"gpu"* ]]
+  then
+    module load cudnn/8.4.0.27-11.6-cuda11-xujsfbv
+    export XLA_FLAGS=--xla_gpu_cuda_data_dir=/usr/local/cuda-11.7
+fi
+
+
+
+
 # List loaded modules
 module list
 <%- end -%>
