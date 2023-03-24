@@ -15,6 +15,7 @@ cd "${HOME}"
 module purge
 
 # Load the require modules
+module use /software/7/modulefiles
 module load <%= context.modules %>
 
 # List loaded modules
