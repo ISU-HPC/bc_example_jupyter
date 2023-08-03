@@ -15,7 +15,6 @@ cd "${HOME}"
 module purge
 
 # Load the require modules
-module use /software/7/modulefiles
 module load <%= context.modules %>
 
 # List loaded modules
@@ -32,4 +31,4 @@ cat ${CONFIG_FILE}
 
 # Launch the Jupyter Notebook Server
 set -x
-jupyter <%= context.jupyter_generation %> --notebook-dir=<%=context.working_dir %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+jupyter-<%= context.jupyter_generation %> --notebook-dir=<%=context.working_dir %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
