@@ -21,6 +21,13 @@ module load <%= context.modules %>
 module list
 <%- end -%>
 
+# Fix umask
+if [ $UID -gt 199 ] && [ "`/usr/bin/id -gn`" = "`/usr/bin/id -un`" ]; then
+    umask 002
+else
+    umask 022
+fi
+
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
 
