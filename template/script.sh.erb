@@ -13,7 +13,8 @@ cd "${HOME}"
 <%- unless context.modules.blank? -%>
 # Purge the module environment to avoid conflicts
 module purge
-
+# Set the modulepath
+module use /software/el9/modulefiles
 # Load the require modules
 module load <%= context.modules %>
 
