@@ -34,3 +34,7 @@ script:
     - "--job-name=<%= job_name %>"
     - "--chdir=<%=working_dir %>"
     - "--qos=<%= slurm_qos.delete(' ') %>"
+    <%- extra_arguments.split.each do |e| -%>
+    - "<%= e %>"
+    <%- end -%>
+

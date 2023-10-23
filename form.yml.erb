@@ -128,6 +128,11 @@ attributes:
   <%- end -%>
     required: true
 
+  extra_arguments:
+       label: "Extra Optional Slurm Arguments"
+       help: "Provide extra arguments for Slurm here. Examples: --mail-type=BEGIN,END,FAIL --mail-user=username@usda.gov --begin=now+1hour"
+       widget: text_field
+       value: ""
 
   # Any extra command line arguments to feed to the `jupyter notebook ...`
   # command that launches the Jupyter notebook within the batch job
@@ -153,5 +158,6 @@ form:
   - num_cores
   - mem_req
   - job_name
+  - extra_arguments
   - jupyter_generation
   - working_dir
