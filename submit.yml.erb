@@ -33,7 +33,7 @@ script:
     - "<%= ntasks.blank? ? 1 : ntasks.to_i %>"
     - "--mem=<%= mem_req %>"
     - "--job-name=<%= job_name %>"
-    <%- if custom_queue.include? "gpu" or custom_queue.include? "a100" -%>
+    <%- if !gres.blank? -%>
     - "--gres=<%= gres %>"
     <%- end -%>
     - "-N 1"   
