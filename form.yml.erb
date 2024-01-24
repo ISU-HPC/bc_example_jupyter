@@ -86,7 +86,7 @@ attributes:
 
   mem_req:
     label: "Memory required"
-    help: "If no unit specified, Megabytes.  Can use 'k', 'M', 'G' suffixes.  NO DECIMALS.  Example: 3072M"
+    help: "Specified as a whole number (no decimals) followed by a unit; e.g., 'M' (megabytes) or 'G' (gigabytes). Example: '16G' to request 16 gigabytes."
     widget: text_field
     value: "6000M"
 
@@ -129,7 +129,7 @@ attributes:
     required: true
 
   extra_arguments:
-       label: "Extra Optional Slurm Arguments"
+       label: "Optional Slurm Arguments"
        help: "Provide extra arguments for Slurm here. Examples: --mail-type=BEGIN,END,FAIL --mail-user=username@usda.gov --begin=now+1hour"
        widget: text_field
        value: ""
@@ -157,7 +157,7 @@ form:
   - bc_num_slots
   - num_cores
   - mem_req
-  - job_name
+  #- job_name    # Per VRSC-13520
   - extra_arguments
   - jupyter_generation
   - working_dir
