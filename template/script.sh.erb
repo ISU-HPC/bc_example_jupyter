@@ -39,4 +39,6 @@ cat ${CONFIG_FILE}
 export SLURM_EXPORT_ENV=ALL
 # Launch the Jupyter Notebook Server
 set -x
-jupyter-<%= context.jupyter_generation %> --notebook-dir=<%=context.working_dir %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+rsync /reference/containers/jupyter/jupyter-4.0.7.sif ${TMPDIR}/
+apptainer exec ${TMPDIR}/jupyter-4.0.7.sif \
+    jupyter-<%= context.jupyter_generation %> --notebook-dir=<%=context.working_dir %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
