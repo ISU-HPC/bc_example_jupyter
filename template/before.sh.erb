@@ -59,6 +59,7 @@ c.NotebookApp.open_browser = False
 c.NotebookApp.allow_origin = '*'
 c.NotebookApp.notebook_dir = '<%= context.working_dir %>'
 c.NotebookApp.disable_check_xsrf = True
+c.MappingKernelManager.kernel_info_timeout = 300
 EOL
 )
 
@@ -76,6 +77,7 @@ c.ServerApp.open_browser = False
 c.ServerApp.allow_origin = '*'
 c.ServerApp.root_dir = '<%= context.working_dir %>'
 c.ServerApp.disable_check_xsrf = True
+c.MappingKernelManager.kernel_info_timeout = 300
 EOL
 )
 
