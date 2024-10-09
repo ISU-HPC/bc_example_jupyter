@@ -37,4 +37,6 @@ script:
     - "--gres=<%= gres %>"
     <%- end -%>
     - "-N 1"   
-
+    <%- extra_arguments.split.each do |e| -%>
+    - "<%= e %>"
+    <%- end -%>
