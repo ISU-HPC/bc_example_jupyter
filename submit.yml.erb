@@ -29,8 +29,7 @@ script:
   queue_name: "<%= custom_queue.delete(' ') %>"
   accounting_id: "<%= custom_account.delete(' ') %>"
   native:
-    - "-n"
-    - "<%= ntasks.blank? ? 1 : ntasks.to_i %>"
+    - "--ntasks-per-node=<%= ntasks.blank? ? 1 : ntasks.to_i %>"
     - "--mem=<%= mem_req %>"
     - "--job-name=<%= job_name %>"
     <%- if !gres.blank? -%>
