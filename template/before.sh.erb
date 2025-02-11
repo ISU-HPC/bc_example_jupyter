@@ -59,12 +59,12 @@ c.NotebookApp.open_browser = False
 c.NotebookApp.allow_origin = '*'
 c.NotebookApp.notebook_dir = '<%= context.working_dir %>'
 c.NotebookApp.disable_check_xsrf = True
-c.MappingKernelManager.kernel_info_timeout = 300
-c.NotebookApp.shutdown_no_activity_timeout = 600
+c.MappingKernelManager.kernel_info_timeout = 3600
+c.NotebookApp.shutdown_no_activity_timeout = 3600
 c.MappingKernelManager.cull_connected = True
-c.MappingKernelManager.cull_idle_timeout = 300
+c.MappingKernelManager.cull_idle_timeout = 3600
 c.MappingKernelManager.cull_interval = 60
-c.TerminalManager.cull_inactive_timeout = 600
+c.TerminalManager.cull_inactive_timeout = 3600
 c.TerminalManager.cull_interval = 60
 EOL
 )
@@ -83,12 +83,12 @@ c.ServerApp.open_browser = False
 c.ServerApp.allow_origin = '*'
 c.ServerApp.root_dir = '<%= context.working_dir %>'
 c.ServerApp.disable_check_xsrf = True
-c.MappingKernelManager.kernel_info_timeout = 300
-c.ServerApp.shutdown_no_activity_timeout = 600
+c.MappingKernelManager.kernel_info_timeout = 3600
+c.ServerApp.shutdown_no_activity_timeout = 3600
 c.MappingKernelManager.cull_connected = True
-c.MappingKernelManager.cull_idle_timeout = 300
+c.MappingKernelManager.cull_idle_timeout = 3600
 c.MappingKernelManager.cull_interval = 60
-c.TerminalManager.cull_inactive_timeout = 600
+c.TerminalManager.cull_inactive_timeout = 3600
 c.TerminalManager.cull_interval = 60
 EOL
 )
