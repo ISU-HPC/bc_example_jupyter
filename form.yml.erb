@@ -35,7 +35,7 @@ attributes:
   #     modules: "python/3.5"
   # @example Using combination of modules
   #     modules: "python/3.5 cuda/8.0.44"
-  modules: "jupyterhub/2.0.2"
+  #modules: "jupyterhub/2.0.2"
 
   # Any extra command line arguments to feed to the `jupyter notebook ...`
   # command that launches the Jupyter notebook within the batch job
@@ -141,7 +141,7 @@ attributes:
 #   option, then it will not appear in the form page that the user sees in the
 #   Dashboard
 form:
-  - modules
+ # - modules
   - extra_jupyter_args
   - custom_account
   - custom_queue
