@@ -12,7 +12,7 @@ cd "${HOME}"
 
 #<%- unless context.modules.blank? -%>
 # Purge the module environment to avoid conflicts
-module purge
+#module purge
 
 # Load the require modules
 #module load <%= context.modules %>
@@ -21,18 +21,18 @@ module purge
 
 # Load additional modules on the GPU node
 
-if [[ $(hostname) == *"gpu"* ]]
-  then
-    module load cudnn
-    export XLA_FLAGS=--xla_gpu_cuda_data_dir=/usr/local/cuda
-fi
+#if [[ $(hostname) == *"gpu"* ]]
+#  then
+#    module load cudnn
+#    export XLA_FLAGS=--xla_gpu_cuda_data_dir=/usr/local/cuda
+#fi
 
 
 
 
 # List loaded modules
-module list
-<%- end -%>
+#module list
+#<%- end -%>
 
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"

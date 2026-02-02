@@ -28,7 +28,7 @@ attributes:
   # @note It is called within the batch job as `module load <modules>` if
   #   defined
   # @example Do not load any modules
-  #     modules: ""
+  modules: ""
   # @example Using default python module
   #     modules: "python"
   # @example Using specific python module
@@ -141,7 +141,7 @@ attributes:
 #   option, then it will not appear in the form page that the user sees in the
 #   Dashboard
 form:
- # - modules
+  - modules
   - extra_jupyter_args
   - custom_account
   - custom_queue
